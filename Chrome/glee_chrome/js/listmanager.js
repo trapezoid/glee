@@ -144,8 +144,6 @@ Glee.ListManager = {
                 'pocnedlaincikkkcmlpcbipcflgjnjlj' // ChromeMigemo の Extension ID (Extension Gallery からインストールした場合)
                 ,{"action": "getRegExpString", "query": query}
                 ,function(response) {
-                    console.log(response); 
-                    //=> {"action":"getRegExpString", "query":"kaisetu", "result":"回折|解説|開設|kaisetu|ｋａｉｓｅｔｕ|かいせつ|カイセツ|ｶｲｾﾂ"}
                     var regexp = new RegExp(response.result, 'i');
 
                     for (var i = 0; i < len; i++) {
