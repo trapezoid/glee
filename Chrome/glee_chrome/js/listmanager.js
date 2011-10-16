@@ -136,16 +136,30 @@ Glee.ListManager = {
 
     refreshList: function() {
         var query = this.searchField.attr('value');
+
         var listItems = $('.gleeListItem');
         var len = listItems.length;
-        for (var i = 0; i < len; i++) {
-            if (listItems[i].innerText.toLowerCase().indexOf(query.toLowerCase()) == -1)
-                this.hideFromList(i);
-            else
-                this.showInList(i);
-        }
-        this.currentIndex = -1;
-        this.selected = $('.gleeListItem:visible')[0];
+        var self = this;
+        chrome.extension.sendRequest(
+                'pocnedlaincikkkcmlpcbipcflgjnjlj' // ChromeMigemo の Extension ID (Extension Gallery からインストールした場合)
+                ,{"action": "getRegExpString", "query": query}
+                ,function(response) {
+                    console.log(response); 
+                    //=> {"action":"getRegExpString", "query":"kaisetu", "result":"回折|解説|開設|kaisetu|ｋａｉｓｅｔｕ|かいせつ|カイセツ|ｶｲｾﾂ"}
+                    var regexp = new RegExp(response.result, 'i');
+
+                    for (var i = 0; i < len; i++) {
+                        if (regexp.test(listItems[i].innerText.toLowerCase())) {
+                            self.showInList(i);
+                        } else {
+                            self.hideFromList(i);
+                        }
+                    }
+                    self.currentIndex = -1;
+                    self.selected = $('.gleeListItem:visible')[0];
+                }
+                );
+
     },
 
     getSelectedItemIndex: function() {
