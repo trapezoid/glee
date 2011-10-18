@@ -29,23 +29,35 @@ var LinkReaper = {
      *  @param {String} term String to search for.
      */
     reapLinks: function(term, override) {
-        if ((term != '') && ((LinkReaper.searchTerm != term) || override)) {
-            // If this term is a specialization of the last term, restrict search to currently selected links
-            if (LinkReaper.searchTerm != '' &&
-                (term.indexOf(LinkReaper.searchTerm) === 0)) {
-                LinkReaper.resetHighlight(LinkReaper.selectedLinks);
-                LinkReaper.selectedLinks = $(LinkReaper.getMatches(term, LinkReaper.lastMatchedLinks));
-            }
-            // else start over
-            else {
-                LinkReaper.unreapAllLinks();
-                LinkReaper.selectedLinks = $(LinkReaper.getMatches(term));
-            }
-            LinkReaper.selectedLinks.addClass('GleeReaped');
-            LinkReaper.searchTerm = term;
-            LinkReaper.selectedLinks = Utils.sortElementsByPosition(LinkReaper.selectedLinks);
-            LinkReaper.traversePosition = 0;
-        }
+        var self = this;
+        if (term.length < 3) return;
+        chrome.extension.sendRequest(
+                'pocnedlaincikkkcmlpcbipcflgjnjlj' // ChromeMigemo の Extension ID (Extension Gallery からインストールした場合)
+                ,{"action": "getRegExpString", "query": term}
+                ,function(response) {
+                    var regexp = new RegExp(response.result, 'i');
+                    if ((term != '') && ((LinkReaper.searchTerm != term) || override)) {
+                        //If this term is a specialization of the last term, restrict search to currently selected links
+                        if (LinkReaper.searchTerm != '' &&
+                            (term.indexOf(LinkReaper.searchTerm) === 0)) {
+                                LinkReaper.resetHighlight(LinkReaper.selectedLinks);
+                                //LinkReaper.selectedLinks = $(LinkReaper.getMatches(regexp, LinkReaper.lastMatchedLinks));
+                                LinkReaper.selectedLinks = $(LinkReaper.getMatches(regexp));
+                            }
+                        // else start over
+                        else {
+                            LinkReaper.unreapAllLinks();
+                            LinkReaper.selectedLinks = $(LinkReaper.getMatches(regexp));
+                        }
+                        console.log(LinkReaper);
+
+                        LinkReaper.selectedLinks.addClass('GleeReaped');
+                        LinkReaper.searchTerm = term;
+                        LinkReaper.selectedLinks = Utils.sortElementsByPosition(LinkReaper.selectedLinks);
+                        LinkReaper.traversePosition = 0;
+                    }
+                }
+                );
     },
 
     /**
@@ -178,12 +190,17 @@ var LinkReaper = {
         // links that are labelled to be included at any level of match not in current view
         var offscreenLabelMatches = [];
 
-        query = query.toLowerCase();
         if (links === undefined)
             links = LinkReaper.cachedLinks;
 
         $.each(links, function(i, link) {
-            var matchIndex = link.text.indexOf(query);
+            //var matchIndex = link.text.indexOf(query);
+            var matchIndex = -1;
+            if (query.test(link.text)) {
+                matchIndex = query.lastIndex;
+            //console.log(link.text);
+            }
+
             var wordBarrier = /[^A-Za-z0-9]/;
             var inView = Utils.isVisibleToUser(link.el);
 
@@ -200,7 +217,8 @@ var LinkReaper = {
                     else
                         offscreenExactMatches.push(link.el);
                 }
-                else if (link.text[matchIndex - 1].match(wordBarrier)) {
+                //else if (link.text[matchIndex - 1].match(wordBarrier)) {
+                else {
                     if (inView)
                         onscreenWordMatches.push(link.el);
                     else
