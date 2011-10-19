@@ -202,10 +202,6 @@ Glee.Events = {
             // Set timer to search for links
             Glee.timer = setTimeout(function() {
                 LinkReaper.reapLinks(Glee.value());
-                Glee.selectedElement = LinkReaper.getFirst();
-                Glee.setState(Glee.selectedElement, 'el');
-                Glee.scrollToElement(Glee.selectedElement);
-                Glee.setSearchActivity(false);
             }, Glee.defaults.linkSearchTimer);
         }
         else {

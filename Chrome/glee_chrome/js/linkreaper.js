@@ -30,7 +30,8 @@ var LinkReaper = {
      */
     reapLinks: function(term, override) {
         var self = this;
-        if (term.length < 3) return;
+        //if (term.length < 3) return;
+        console.log(term);
         chrome.extension.sendRequest(
                 'pocnedlaincikkkcmlpcbipcflgjnjlj' // ChromeMigemo の Extension ID (Extension Gallery からインストールした場合)
                 ,{"action": "getRegExpString", "query": term}
@@ -55,6 +56,11 @@ var LinkReaper = {
                         LinkReaper.searchTerm = term;
                         LinkReaper.selectedLinks = Utils.sortElementsByPosition(LinkReaper.selectedLinks);
                         LinkReaper.traversePosition = 0;
+
+                        Glee.selectedElement = LinkReaper.getFirst();
+                        Glee.setState(Glee.selectedElement, 'el');
+                        Glee.scrollToElement(Glee.selectedElement);
+                        Glee.setSearchActivity(false);
                     }
                 }
                 );
