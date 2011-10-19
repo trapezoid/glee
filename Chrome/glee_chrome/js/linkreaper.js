@@ -30,8 +30,6 @@ var LinkReaper = {
      */
     reapLinks: function(term, override) {
         var self = this;
-        //if (term.length < 3) return;
-        console.log(term);
         chrome.extension.sendRequest(
                 'pocnedlaincikkkcmlpcbipcflgjnjlj' // ChromeMigemo の Extension ID (Extension Gallery からインストールした場合)
                 ,{"action": "getRegExpString", "query": term}
@@ -50,7 +48,6 @@ var LinkReaper = {
                             LinkReaper.unreapAllLinks();
                             LinkReaper.selectedLinks = $(LinkReaper.getMatches(regexp));
                         }
-                        console.log(LinkReaper);
 
                         LinkReaper.selectedLinks.addClass('GleeReaped');
                         LinkReaper.searchTerm = term;
